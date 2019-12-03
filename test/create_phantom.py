@@ -5,7 +5,7 @@ import seaborn as sns
 sns.set()
 plt.close('all')
 import os
-np.random.seed(21) # seed random number generator to get consistent values
+np.random.seed(4) # seed random number generator to get consistent values
 
 def replace_GV(mask_fname, mu_phantom, sigma_phantom):
     """ Replaces grey values in mask with random numbers from normal dist defined with mu_phantom and sigma_phantom
