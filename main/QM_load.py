@@ -1,3 +1,8 @@
+import time
+from PIL import Image
+import numpy as np
+import sys
+
 def QM_load(img_fname, pct_stack_import = 10.):
     """Loads n slices of a 3D image stack specified by percentage of stack to import
 

@@ -1,4 +1,16 @@
-def QM_fit(img, n_gaussians, out_dir):
+import time
+import numpy as np
+import sklearn.mixture
+import sys
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+plt.close('all')
+from scipy.stats import norm
+import os
+import csv
+
+def QM_fit(img, n_gaussians, out_dir, img_fname):
     """ Fits Gaussian mixture model to grey value histogram of img
 
     Parameters
@@ -9,6 +21,8 @@ def QM_fit(img, n_gaussians, out_dir):
         Number of Gaussian components to fit to histogram, usually equals number of material components in specimen
     out_dir : str
         Path to results directory
+    img_fname : str
+        Filepath of loaded image (same input as QM_load)
     
     Returns
     -------
@@ -44,7 +58,7 @@ def QM_fit(img, n_gaussians, out_dir):
     sigma_fitted = np.sqrt(GMM.covariances_.reshape([n_gaussians])) # standard deviation = sqrt(variance)
     weights_fitted = GMM.weights_.reshape([n_gaussians]) # extract weights
 
-    sort_ind = np.argsort(mu) # list of indices sorted in ascending order of mu
+    sort_ind = np.argsort(mu_fitted) # list of indices sorted in ascending order of mu
     mu_fitted = mu_fitted[sort_ind]
     sigma_fitted = sigma_fitted[sort_ind]
     weights_fitted = weights_fitted[sort_ind]
@@ -52,10 +66,10 @@ def QM_fit(img, n_gaussians, out_dir):
 
     # Plot fitted Gaussians and save to out_dir ---------------------------------------------------------------------------------------
     
-    for i in range(0, len(mu)): # plot normal distributions with fitted mu and sigma, scaled with corresponding weights
+    for i in range(0, len(mu_fitted)): # plot normal distributions with fitted mu and sigma, scaled with corresponding weights
         y = norm.pdf(histo[1], mu_fitted[i], sigma_fitted[i]) # generate normal distribution
-        norm_mat[:,i] = y*weights[i] # scale by weight, write y-coordinates to norm_mat
-        gauss = plt.plot(histo[1], y, label = "Gaussian {}, $\mu$ = {0:.2f}, $\sigma$ = {0:.2f}".format(i, mu_fitted[i], sigma_fitted[i], weights_fitted[i]))
+        norm_mat[:,i] = y * weights_fitted[i] # scale by weight, write y-coordinates to norm_mat
+        gauss = plt.plot(histo[1], y, label = "Gaussian {0}, $\mu$ = {1:.2f}, $\sigma$ = {2:.2f}".format(i, mu_fitted[i], sigma_fitted[i], weights_fitted[i]))
         
         x_mu = np.full([2,], mu_fitted[i]) # x-coord of vertical line marking mean of Gaussian
         y_mu = [0., np.max(y)] # y-coords of vertical line marking mean of Gaussian
@@ -75,9 +89,9 @@ def QM_fit(img, n_gaussians, out_dir):
 
     with open(os.path.join(out_dir, "fitted_results.csv"), "w", newline = "") as csv_file:
         w = csv.writer(csv_file, delimiter = ",")
-        csv_file.write("# Image filename = {}".format(img_fname))
-        csv_file.write("# Fitted Gaussians")
-        csv_file.write("# Mean, Standard Deviation, Weight")
+        csv_file.write("# Image filename = {} \n".format(img_fname))
+        csv_file.write("# Fitted Gaussians \n")
+        csv_file.write("# Mean, Standard Deviation, Weight \n")
         for i in range(len(mu_fitted)):
             to_write = [mu_fitted[i], sigma_fitted[i], weights_fitted[i]]
             w.writerow(to_write) # writes mu, sigma and weight of each fitted Gaussian as a new row

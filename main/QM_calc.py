@@ -1,4 +1,9 @@
-def QM_calc(mu, sigma):
+import numpy as np
+import sys
+import pandas as pd
+import os
+
+def QM_calc(mu, sigma, out_dir):
     """ Given mu and sigma, calculate SNR and CNR of all possible combinations
 
     SNR = mu_A / sigma_B
@@ -10,6 +15,8 @@ def QM_calc(mu, sigma):
         Numpy 1-D array of means of fitted Gaussians as floats
     sigma : numpy array
         Numpy 1-D array of standard deviations of fitted Gaussians as floats
+    out_dir : str
+        Filepath to save results to
     
     Returns
     -------
@@ -33,7 +40,7 @@ def QM_calc(mu, sigma):
                 CNR_all.append(CNR)
                 gaussian_A.append(i)
                 gaussian_B.append(j)
-                sys.stdout.write("SNR = {0:.2f} and CNR = {0:.2f} with Gaussian A = {} and Gaussian B = {}".format(SNR, CNR, i, j))
+                sys.stdout.write("SNR = {0:.2f} and CNR = {1:.2f} with Gaussian A = {2} and Gaussian B = {3} \n".format(SNR, CNR, i, j))
 
     # Output as pd df to send to .csv --------------------------------------------------------------------------------------------------
 
