@@ -1,0 +1,44 @@
+# Import libraries
+import os
+
+# Import QM functions
+
+from QM_load import QM_load
+from QM_fit import QM_fit
+from QM_calc import QM_calc
+
+def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
+    """ Basic workflow returning SNR and CNR
+    Parameters
+    ----------
+    img_fname : str
+        Filepath of image to load
+    n_gaussians : int
+        Number of Gaussians to fit
+    pct_stack_import : float
+        Percentage of stack to import, defaults to 10.
+    Returns
+    -------
+    img
+        Numpy array containing loaded image
+    mu
+        Numpy 1-D array of size (n_gaussians,) containing fitted means from Gaussian mixture model
+    sigma
+        Numpy 1-D array of size (n_gaussians,) containing fitted standard deviations from Gaussian mixture model
+    SNR_CNR_df
+        Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
+    """
+    img = QM_load(img_fname, pct_stack_import) # import image from img_fname
+    out_dir = "{}_results".format(os.path.splitext(img_fname)[0]) # define results directory
+    if os.path.isdir(out_dir) == False:
+        os.mkdir(out_dir) # create results directory if not already existing
+    mu, sigma = QM_fit(img, n_gaussians, img_fname) # fit Gaussian mixture model
+    SNR_CNR_df = QM_calc(mu, sigma, out_dir)
+
+    return img, mu, sigma, SNR_CNR_df
+
+# Main
+
+if __name__ == "__main__":
+    img_fname = os.path.join(os.getcwd(), "test", "test.tif") # edit to match image filename
+    QM_runner(img_fname, 3)
