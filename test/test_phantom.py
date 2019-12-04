@@ -12,7 +12,9 @@ import create_phantom
 
 print("Tests to ensure fitted values are correct \n")
 
-I_phantom, mu_phantom, sigma_phantom = create_phantom.create_phantom() # Create phantom to test with
+mu_phantom = [40, 100, 160] # 3 example means in 8-bit range
+sigma_phantom = [5, 15, 20] # 3 example standard deviations
+I_phantom = create_phantom.create_phantom(mu_phantom, sigma_phantom) # Create phantom to test with
 mu_fitted, sigma_fitted = QM_fit.QM_fit(I_phantom, 3, img_fname = "NA", save_results = False)
 SNR_CNR_df = QM_calc.QM_calc(mu_fitted, sigma_fitted, out_dir = "NA", save_results = False)
 

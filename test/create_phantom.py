@@ -34,27 +34,22 @@ def replace_GV(mask_fname, mu_phantom, sigma_phantom):
 
     return I_phantom
 
-def create_phantom():
+def create_phantom(mu_phantom, sigma_phantom):
     """ Creates phantom image with known grey value distributions generated randomly
     Takes the masks 'Air.tif', 'Wax.tif', 'Tissue.tif' segmented from a micro-CT 3D image dataset and assigns
     random values from normal distributions with mu_phantom and sigma_phantom to the grey values of each mask.
     The masks are then combined to create a phantom image which has a histogram made up of 3 peaks.
     Parameters
     ----------
-    None
+    mu_phantom : list of int
+        List of size 3 containing integer values of means between 0-255 (8-bit)
+    sigma_phantom : list of int
+        List of size 3 containing integer values of standard deviations ('sensible' values)
     Returns
     -------
     I_phantom
-        Combined masks with grey values replaced
-    mu_phantom
-        Numpy 1-D array of size 3 containing integer values of randomly chosen means between 0-255 (8-bit)
-    sigma_phantom
-        Numpy 1-D array of size 3 containing integer values of randomly chosen standard deviations between 2-40 ('sensible' values)
-    
+        Combined masks with grey values replaced    
     """
-    mu_phantom = [40, 100, 160] # 3 example means in 8-bit range
-    sigma_phantom = [5, 15, 20] # 3 example standard deviations
-
     I_air = replace_GV("Air.tif", mu_phantom[0], sigma_phantom[0])
     I_wax = replace_GV("Wax.tif", mu_phantom[1], sigma_phantom[1])
     I_tissue = replace_GV("Tissue.tif", mu_phantom[2], sigma_phantom[2])
@@ -65,7 +60,7 @@ def create_phantom():
     print("Phantom standard deviations are {}".format(sigma_phantom))
     print("Phantom successfully created")
 
-    return I_phantom, mu_phantom, sigma_phantom
+    return I_phantom
 
 def show_phantom(I_phantom):
     """ Shows first slice of phantom image and histogram
