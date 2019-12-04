@@ -5,7 +5,6 @@ import seaborn as sns
 sns.set()
 plt.close('all')
 import os
-np.random.seed(4) # seed random number generator to get consistent values
 
 def replace_GV(mask_fname, mu_phantom, sigma_phantom):
     """ Replaces grey values in mask with random numbers from normal dist defined with mu_phantom and sigma_phantom
@@ -53,8 +52,8 @@ def create_phantom():
         Numpy 1-D array of size 3 containing integer values of randomly chosen standard deviations between 2-40 ('sensible' values)
     
     """
-    mu_phantom = np.random.randint(low = 0, high = 255, size = 3) # generate 3 random means anywhere in 8-bit range
-    sigma_phantom = np.random.randint(low = 2, high = 40, size = 3) # generate 3 random standard deviations
+    mu_phantom = [40, 100, 160] # 3 example means in 8-bit range
+    sigma_phantom = [5, 15, 20] # 3 example standard deviations
 
     I_air = replace_GV("Air.tif", mu_phantom[0], sigma_phantom[0])
     I_wax = replace_GV("Wax.tif", mu_phantom[1], sigma_phantom[1])

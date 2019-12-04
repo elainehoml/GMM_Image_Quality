@@ -1,6 +1,7 @@
 import os
 import sys
 import numpy as np
+import random
 sys.path.append(os.path.join(os.getcwd(), "main"))
 import unittest
 import QM_runner
@@ -73,7 +74,7 @@ def phantom_CNR(i, j):
     CNR_fitted = np.abs(mu_fitted[i] - mu_fitted[j]) / np.sqrt(sigma_fitted[i]**2 + sigma_fitted[j]**2)
 
     CNR_diff = 100 * (np.abs(CNR_phantom - CNR_fitted)/CNR_phantom)
-    if int(CNR_diff) > 2:
+    if int(CNR_diff) > 5:
         return True
     else:
         return False
@@ -101,15 +102,16 @@ class Phantom_Validation(unittest.TestCase):
         for i in range(len(sigma_difference)):
             self.assertFalse(sigma_difference[i], "Percentage difference between sigma_fitted and sigma_phantom > 5%")
 
-    # def test_SNR(self):
-    #     """ Compare SNR from phantom and fitted between randomly chosen Gaussians to see if they are close to each other
-    #     Raises
-    #     ------
-    #     AssertionError
-    #         If difference between SNR phantom and fitted > 2%
-    #     """
-    #     (i, j) = np.random.randint(0, 2, size = 2) # choose two random numbers to compare
-        
+    def test_SNR_CNR(self):
+        """ Compare SNR and CNR from phantom and fitted between randomly chosen Gaussians to see if they are close to each other
+        Raises
+        ------
+        AssertionError
+            If difference between SNR phantom and fitted > 2%
+        """
+        (i, j) = random.sample(range(len(mu_fitted)), 2) # choose two random numbers to compare
+        self.assertFalse(phantom_SNR(i, j), "Percentage difference in SNR between fitted and phantom > 5%")
+        self.assertFalse(phantom_CNR(i, j), "Percentage difference in CNR between fitted and phantom > 5%")       
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(Phantom_Validation)
