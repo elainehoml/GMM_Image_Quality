@@ -34,7 +34,7 @@ def replace_GV(mask_fname, mu_phantom, sigma_phantom):
 
     return I_phantom
 
-def create_phantom(mu_phantom, sigma_phantom):
+def create_phantom(mu_phantom, sigma_phantom, img_dir):
     """ Creates phantom image with known grey value distributions generated randomly
     Takes the masks 'Air.tif', 'Wax.tif', 'Tissue.tif' segmented from a micro-CT 3D image dataset and assigns
     random values from normal distributions with mu_phantom and sigma_phantom to the grey values of each mask.
@@ -45,14 +45,16 @@ def create_phantom(mu_phantom, sigma_phantom):
         List of size 3 containing integer values of means between 0-255 (8-bit)
     sigma_phantom : list of int
         List of size 3 containing integer values of standard deviations ('sensible' values)
+    img_dir : str
+        Directory where test images are stored
     Returns
     -------
     I_phantom
         Combined masks with grey values replaced    
     """
-    I_air = replace_GV("Air.tif", mu_phantom[0], sigma_phantom[0])
-    I_wax = replace_GV("Wax.tif", mu_phantom[1], sigma_phantom[1])
-    I_tissue = replace_GV("Tissue.tif", mu_phantom[2], sigma_phantom[2])
+    I_air = replace_GV(os.path.join(img_dir, "Air.tif"), mu_phantom[0], sigma_phantom[0])
+    I_wax = replace_GV(os.path.join(img_dir, "Wax.tif"), mu_phantom[1], sigma_phantom[1])
+    I_tissue = replace_GV(os.path.join(img_dir, "Tissue.tif"), mu_phantom[2], sigma_phantom[2])
     I_phantom = I_air + I_wax + I_tissue # Combine masks to get a full image
     I_phantom = I_phantom.reshape(I_air.shape) # Make sure to keep original dimensions
 
@@ -72,7 +74,7 @@ def show_phantom(I_phantom):
     -------
     None
     """
-    plt.figure()
+    plt.figure(figsize = [15.,5.])
     
     # Show image
     plt.subplot(1, 2, 1)

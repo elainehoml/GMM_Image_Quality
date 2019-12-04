@@ -14,7 +14,8 @@ print("Tests to ensure fitted values are correct \n")
 
 mu_phantom = [40, 100, 160] # 3 example means in 8-bit range
 sigma_phantom = [5, 15, 20] # 3 example standard deviations
-I_phantom = create_phantom.create_phantom(mu_phantom, sigma_phantom) # Create phantom to test with
+img_dir = os.path.join(os.getcwd(), "test")
+I_phantom = create_phantom.create_phantom(mu_phantom, sigma_phantom, img_dir) # Create phantom to test with
 mu_fitted, sigma_fitted = QM_fit.QM_fit(I_phantom, 3, img_fname = "NA", save_results = False)
 SNR_CNR_df = QM_calc.QM_calc(mu_fitted, sigma_fitted, out_dir = "NA", save_results = False)
 
@@ -116,5 +117,5 @@ class Phantom_Validation(unittest.TestCase):
         self.assertFalse(phantom_CNR(i, j), "Percentage difference in CNR between fitted and phantom > 5%")       
 
 
-suite = unittest.TestLoader().loadTestsFromTestCase(Phantom_Validation)
-unittest.TextTestRunner(verbosity = 2).run(suite)
+# suite = unittest.TestLoader().loadTestsFromTestCase(Phantom_Validation)
+# unittest.TextTestRunner(verbosity = 2).run(suite)
