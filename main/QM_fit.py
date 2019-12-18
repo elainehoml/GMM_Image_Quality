@@ -10,7 +10,7 @@ from scipy.stats import norm
 import os
 import csv
 
-def QM_fit(img, n_gaussians, img_fname, save_results = True):
+def QM_fit(img, n_gaussians, img_fname, save_results = True, show_plots = True):
     """ Fits Gaussian mixture model to grey value histogram of img
 
     Parameters
@@ -23,6 +23,8 @@ def QM_fit(img, n_gaussians, img_fname, save_results = True):
         Filepath of loaded image (same input as QM_load). If img only exists in memory, use "NA"
     save_results : bool
         If True, save results to results directory, if false don't save results.
+    show_plots : bool
+        If True, show plots
 
     Returns
     -------
@@ -90,7 +92,9 @@ def QM_fit(img, n_gaussians, img_fname, save_results = True):
     if save_results == True:
         plt.savefig(os.path.join(out_dir, "histo.png"))
         sys.stdout.write("Histogram plotted and saved to {} \n".format(out_dir))
-    plt.show()
+    
+    if show_plots == True:
+        plt.show()
 
     
 
