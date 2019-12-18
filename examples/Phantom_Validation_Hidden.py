@@ -44,7 +44,7 @@ def calc_pct_diff(value_1, value_2):
     pct_diff = 100 * (float(value_1) - float(value_2)) / float(value_1)
     return pct_diff
 
-def plot_pct_diff(xseries, pct_diff, title, legend = True):
+def plot_pct_diff(xseries, pct_diff, title, xlabel, legend = True):
     """ Plots percentage difference series against xseries
 
     Parameters
@@ -55,6 +55,8 @@ def plot_pct_diff(xseries, pct_diff, title, legend = True):
         Y-data to be plotted (will be converted to np array)
     title : str
         title of plot
+    xlabel : str
+        x-axis label
     legend : bool
         if True, plot legend
     
@@ -72,23 +74,35 @@ def plot_pct_diff(xseries, pct_diff, title, legend = True):
     plt.plot(xseries, pct_diff[:,2], label = "Tissue")
     if legend == True:
         plt.legend(fontsize=14)
-    plt.xlabel("$\mu_{Tissue} - \mu_{Wax}$ (grey value)", fontsize = 16)
+    plt.xlabel(xlabel, fontsize = 16)
     #plt.ylabel(title, fontsize = 16)
     plt.title(title, fontsize = 15)
 
-def contrast_plot(mu_tissue_contrast, pct_diff_mu_results, pct_diff_sigma_results, CNR):
-    """ Wrapper function to plot pct diff and CNR against contrast between tissue and wax """
-    contrast = mu_tissue_contrast - 35 # subtract mu_wax to give contrast between mu_tissue and mu_wax
+def summary_plot(xseries, xlabel, pct_diff_mu_results, pct_diff_sigma_results, CNR):
+    """ Wrapper function to plot % diff and CNR against contrast between tissue and wax
 
+    Parameters
+    ----------
+    xseries : list or array
+        Data to plot on x-axis
+    xlabel : str
+        X-axis label
+    pct_diff_mu_results : list or array
+        % difference in mu
+    pct_diff_sigma_results : list or array
+        % difference in sigma
+    CNR : list or array
+        contrast-to-noise ratio between tissue and wax
+    """
+    
     plt.figure(figsize = (15,5))
     sns.set_style('white')
-
     plt.subplot(1,3,1)
-    plot_pct_diff(contrast, pct_diff_mu_results, "(a) % Difference in Fitted and Assigned $\mu$")
+    plot_pct_diff(xseries, pct_diff_mu_results, "(a) % Difference in Fitted and Assigned $\mu$", xlabel)
     plt.subplot(1,3,2)
-    plot_pct_diff(contrast, pct_diff_sigma_results, "(b) % Difference in Fitted and Assigned $\sigma$")
+    plot_pct_diff(xseries, pct_diff_sigma_results, "(b) % Difference in Fitted and Assigned $\sigma$", xlabel)
     plt.subplot(1,3,3)
-    plt.plot(contrast, CNR)
+    plt.plot(xseries, CNR)
     plt.title("(c) CNR between wax and tissue", fontsize = 16)
-    plt.xlabel("$\mu_{Tissue} - \mu_{Wax}$ (grey value)", fontsize = 16)
+    plt.xlabel(xlabel, fontsize = 16)
     plt.show()
