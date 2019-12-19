@@ -3,7 +3,7 @@ from fiji.util.gui import GenericDialogPlus
 from javax.swing import JFrame, JButton, JList
 from java.awt import GridLayout, BorderLayout
 
-# User dialogs -------------------------------------
+# User dialogs -------------------------------------------------------------
 
 def get_user_params(event):
     """ Allows user to select file and user parameters
@@ -41,15 +41,27 @@ def get_user_params(event):
         user_params['min_gv'] = float(gui.getNextNumber())
         user_params['max_gv'] = float(gui.getNextNumber())
     
-    # Print dict to txt file
+    # Create results directory
     results_dir = os.path.splitext(user_params['img_fname'])[0] + "_results"
     if os.path.isdir(results_dir) == False:
         os.mkdir(results_dir)
-    f = open(os.path.join(results_dir, "Users_Params.txt"), "w")
-    for key, val in user_params.items():
-        f.writelines(str([key, val]))
-        f.write("\n")
+    print("Results directory:", results_dir)
+
+    # Write user parameters to text file
+    user_params_fname = os.path.join(results_dir, "Users_Params.csv")
+    with open(user_params_fname, "wb") as f:
+        w = csv.DictWriter(f, user_params.keys())
+        w.writeheader()
+        w.writerow(user_params)
+
+    # Write directory to look for user params to text file in main/
+    temp_user_dir = os.path.join(os.path.dirname(__file__), "temp_user_dir.txt")
+    if os.path.isfile(temp_user_dir) == True:
+        os.remove(temp_user_dir) # delete temp_user_dir.txt if present
+    f = open(temp_user_dir, "w")
+    f.write(user_params_fname)
     f.close()
+    print(temp_user_dir)
 
     return user_params
 
@@ -71,11 +83,15 @@ def main_menu():
 
     # Define JButtons
     get_user_params_JB = JButton("Load image and settings", actionPerformed = get_user_params)
+    # TODO(Elaine): JButton for displaying results as a ResultsTable
+    # TODO(Elaine): JButton for displaying thresholded images
 
     # Add JButtons to frame
     frame.add(get_user_params_JB)
 
     frame.setVisible(True)
+
+# Main --------------------------------------------------------------------
 
 main_menu()
     
