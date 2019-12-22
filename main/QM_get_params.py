@@ -24,7 +24,7 @@ def QM_get_params():
     f.close()
     print(user_params_fname)
     
-    # Open users_params.txt
+    # Open users_params.csv
     with open(user_params_fname, "r") as f:
         reader = csv.reader(f, delimiter = ",")
         for i, row in enumerate(reader):
@@ -42,3 +42,5 @@ def QM_get_params():
     user_params['specify_gv'] = user_params['specify_gv'] == "True"
     
     return user_params
+
+print(QM_get_params())
