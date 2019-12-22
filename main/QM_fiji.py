@@ -65,6 +65,29 @@ def get_user_params(event):
 
     return user_params
 
+def fit_GMM(event):
+    """ Calls QM_fiji_runner.py from cmd to fit GMM
+    
+    Parameters
+    ----------
+    event : Event
+        Waits for fit_GMM_JB JButton to be pressed
+    
+    Returns
+    -------
+    img
+        Numpy array containing loaded image
+    mu
+        Numpy 1-D array of size (n_gaussians,) containing fitted means from Gaussian mixture model
+    sigma
+        Numpy 1-D array of size (n_gaussians,) containing fitted standard deviations from Gaussian mixture model
+    SNR_CNR_df
+        Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
+    """
+    cmd_str = "python QM_fiji_runner.py"
+    call = os.system(cmd_str)
+    print("GMM fit button pressed")
+
 def main_menu():
     """ Main menu which is always open
 
@@ -79,15 +102,18 @@ def main_menu():
     """
     frame = JFrame("GMM Image Quality Calculator")
     frame.setSize(400, 300)
-    frame.setLayout(GridLayout(1, 1))
+    frame.setLayout(GridLayout(2, 1))
 
     # Define JButtons
     get_user_params_JB = JButton("Load image and settings", actionPerformed = get_user_params)
+    fit_GMM_JB = JButton("Fit Gaussian Mixture Model", actionPerformed = fit_GMM)
+    # TODO(Elaine): JButton for fitting GMM
     # TODO(Elaine): JButton for displaying results as a ResultsTable
     # TODO(Elaine): JButton for displaying thresholded images
 
     # Add JButtons to frame
     frame.add(get_user_params_JB)
+    frame.add(fit_GMM_JB)
 
     frame.setVisible(True)
 
