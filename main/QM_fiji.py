@@ -84,8 +84,10 @@ def fit_GMM(event):
     SNR_CNR_df
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
-    cmd_str = "python QM_fiji_runner.py"
-    call = os.system(cmd_str)
+    py_dir = os.path.join(os.path.dirname(__file__))
+    cmd_str = "cd " + py_dir + " & python QM_fiji_runner.py & exit()"
+    print(cmd_str)
+    call = os.popen(cmd_str)
     print("GMM fit button pressed")
 
 def main_menu():

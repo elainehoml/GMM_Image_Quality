@@ -19,7 +19,7 @@ def QM_get_params():
         - specify_gv: if True, limit grey values to min_gv, max_gv
     """
     # Find users_params.txt
-    f = open(os.path.join(os.getcwd(), "main", "temp_user_dir.txt"), "r")
+    f = open(os.path.join(os.path.dirname(__file__), "temp_user_dir.txt"), "r")
     user_params_fname = f.readlines()[0]
     f.close()
     print(user_params_fname)
