@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 import os
 
-def QM_calc(mu, sigma, out_dir, save_results = True):
+def QM_calc(mu, sigma, out_dir, save_results = True, verbose = True):
     """ Given mu and sigma, calculate SNR and CNR of all possible combinations
 
     SNR = mu_A / sigma_B
@@ -19,6 +19,8 @@ def QM_calc(mu, sigma, out_dir, save_results = True):
         Filepath to save results to, if save_results = False, use "NA"
     save_results : bool
         If True, save results to out_dir.
+    verbose : bool
+        If True, print results to console
     
     Returns
     -------
@@ -42,7 +44,8 @@ def QM_calc(mu, sigma, out_dir, save_results = True):
                 CNR_all.append(CNR)
                 gaussian_A.append(i)
                 gaussian_B.append(j)
-                sys.stdout.write("SNR = {0:.2f} and CNR = {1:.2f} with Gaussian A = {2} and Gaussian B = {3} \n".format(SNR, CNR, i, j))
+                if verbose == True:
+                    sys.stdout.write("SNR = {0:.2f} and CNR = {1:.2f} with Gaussian A = {2} and Gaussian B = {3} \n".format(SNR, CNR, i, j))
 
     # Output as pd df to send to .csv --------------------------------------------------------------------------------------------------
 
