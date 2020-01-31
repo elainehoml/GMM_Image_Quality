@@ -6,6 +6,7 @@ import os
 from QM_load import QM_load
 from QM_fit import QM_fit
 from QM_calc import QM_calc
+import GMM_fit
 
 def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
     """ Basic workflow returning SNR and CNR
@@ -25,14 +26,22 @@ def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
         Numpy 1-D array of size (n_gaussians,) containing fitted means from Gaussian mixture model
     sigma
         Numpy 1-D array of size (n_gaussians,) containing fitted standard deviations from Gaussian mixture model
+    weights
+        Numpy 1-D array of size (n_gaussians,) containing fitted weights from Gaussian mixture model
     SNR_CNR_df
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
     img = QM_load(img_fname, pct_stack_import) # import image from img_fname
-    out_dir = "{}_results".format(os.path.splitext(img_fname)[0]) # define results directory
-    if os.path.isdir(out_dir) == False:
-        os.mkdir(out_dir) # create results directory if not already existing
-    mu, sigma = QM_fit(img, n_gaussians, img_fname) # fit Gaussian mixture model
+    # out_dir = "{}_results".format(os.path.splitext(img_fname)[0]) # define results directory
+    # if os.path.isdir(out_dir) == False:
+    #     os.mkdir(out_dir) # create results directory if not already existing
+    # mu, sigma = QM_fit(img, n_gaussians, img_fname) # fit Gaussian mixture model
+    GMM = GMM_fit.GMM_fit(img, n_gaussians)
+    mu, sigma, weights = GMM_fit.extract_GMM_results(GMM)
+    out_dir = "{}_results".format(os.path.splitext(img_fname)[0])
+    GMM_fit.save_GMM_results(img_fname, GMM)
+    GMM_fit.plot_GMM_fit(img, GMM, img_fname)
+    
     SNR_CNR_df = QM_calc(mu, sigma, out_dir)
 
     return img, mu, sigma, SNR_CNR_df
