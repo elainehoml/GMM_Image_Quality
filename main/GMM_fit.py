@@ -88,13 +88,13 @@ def save_GMM_results(img_fname, GMM):
         Saved in results directory
     """
     # Create results directory
-    out_dir = "{}_results".format(os.path.splitext(img_fname)[0])
-    if os.path.isdir(out_dir) == False:
-        os.mkdir(out_dir)
+    results_dir = "{}_results".format(os.path.splitext(img_fname)[0])
+    if os.path.isdir(results_dir) == False:
+        os.mkdir(results_dir)
     
     # save to csv
     mu, sigma, weights = extract_GMM_results(GMM)
-    with open(os.path.join(out_dir, "fitted_results.csv"), "w", newline = "") as csv_file:
+    with open(os.path.join(results_dir, "fitted_results.csv"), "w", newline = "") as csv_file:
         w = csv.writer(csv_file, delimiter = ",")
         csv_file.write("# Image filename = {} \n".format(img_fname))
         csv_file.write("# Fitted Gaussians \n")
@@ -102,7 +102,7 @@ def save_GMM_results(img_fname, GMM):
         for i in range(len(mu)):
             to_write = [mu[i], sigma[i], weights[i]]
             w.writerow(to_write) # writes mu, sigma and weight of each fitted Gaussian as a new row
-    sys.stdout.write("Results saved to {} \n".format(out_dir))
+    sys.stdout.write("Results saved to {} \n".format(results_dir))
 
 def plot_GMM_fit(img, GMM, img_fname):
     """
@@ -118,9 +118,9 @@ def plot_GMM_fit(img, GMM, img_fname):
         Filepath to image name, used to create results directory
     """
     # Create results directory
-    out_dir = "{}_results".format(os.path.splitext(img_fname)[0])
-    if os.path.isdir(out_dir) == False:
-        os.mkdir(out_dir)
+    results_dir = "{}_results".format(os.path.splitext(img_fname)[0])
+    if os.path.isdir(results_dir) == False:
+        os.mkdir(results_dir)
 
     # Plot grey value histogram
     img_1d = img.flatten()
@@ -146,8 +146,8 @@ def plot_GMM_fit(img, GMM, img_fname):
     ax.legend(bbox_to_anchor = (0.8, -0.2))
     plt.tight_layout()
     
-    plt.savefig(os.path.join(out_dir, "histo.png"))
-    sys.stdout.write("Histogram plotted and saved to {} \n".format(out_dir))
+    plt.savefig(os.path.join(results_dir, "histo.png"))
+    sys.stdout.write("Histogram plotted and saved to {} \n".format(results_dir))
     plt.show()
 
 # img_fname = os.path.join(os.getcwd(), "test", "test.tif")

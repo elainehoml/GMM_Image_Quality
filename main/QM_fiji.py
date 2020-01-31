@@ -45,7 +45,7 @@ def get_user_params(event):
     results_dir = os.path.splitext(user_params['img_fname'])[0] + "_results"
     if os.path.isdir(results_dir) == False:
         os.mkdir(results_dir)
-    print("Results directory:", results_dir)
+    print("Results directory: {}".format(results_dir))
 
     # Write user parameters to text file
     user_params_fname = os.path.join(results_dir, "Users_Params.csv")
@@ -85,9 +85,9 @@ def fit_GMM(event):
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
     py_dir = os.path.join(os.path.dirname(__file__))
-    cmd_str = "cd " + py_dir + " & python QM_fiji_runner.py & exit()"
+    cmd_str = "cd " + py_dir + " & python QM_fiji_runner.py & exit() \n"
     print(cmd_str)
-    call = os.popen(cmd_str)
+    call = os.system(cmd_str)
     print("GMM fit button pressed")
 
 def main_menu():
