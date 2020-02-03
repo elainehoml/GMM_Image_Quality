@@ -1,7 +1,12 @@
-import os, csv
+import os,sys,csv
 from fiji.util.gui import GenericDialogPlus
 from javax.swing import JFrame, JButton, JList
 from java.awt import GridLayout, BorderLayout
+
+# Import Run_CPython
+script_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(script_path)
+import Run_CPython
 
 # User dialogs -------------------------------------------------------------
 
@@ -61,7 +66,6 @@ def get_user_params(event):
     f = open(temp_user_dir, "w")
     f.write(user_params_fname)
     f.close()
-    print(temp_user_dir)
 
     return user_params
 
@@ -84,11 +88,8 @@ def fit_GMM(event):
     SNR_CNR_df
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
-    py_dir = os.path.join(os.path.dirname(__file__))
-    cmd_str = "cd " + py_dir + " & python QM_fiji_runner.py & exit() \n"
-    print(cmd_str)
-    call = os.system(cmd_str)
-    print("GMM fit button pressed")
+    print("Running GMM fit, this might take a while... \n")
+    Run_CPython.run_CPython(script_path, "QM_fiji_runner.py")
 
 def main_menu():
     """ Main menu which is always open

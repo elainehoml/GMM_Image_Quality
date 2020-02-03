@@ -2,8 +2,8 @@ from java.lang import Runtime
 from java.io import BufferedReader, InputStreamReader
 
 # Set up parameters for python script to run here
-path = "C:/Users/emlh1n13/OneDrive - University of Southampton/Data/2019-20/GMM_Image_Quality/scratch"
-script = "cmd_test.py"
+#path = "C:/Users/emlh1n13/OneDrive - University of Southampton/Data/2019-20/GMM_Image_Quality/scratch"
+#script = "cmd_test.py"
 
 def run_CPython(path, script):
 	"""
@@ -69,6 +69,6 @@ def print_output(output_reader):
 	print("\n")
 
 	return output_list
-
-run_CPython(path, script)
-print("done")
+#
+#run_CPython(path, script)
+#print("done")

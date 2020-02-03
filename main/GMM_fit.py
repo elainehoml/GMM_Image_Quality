@@ -37,7 +37,7 @@ def GMM_fit(img, n_gaussians):
     GMMfit = GMM.fit(img_1d.reshape(-1,1))
 
     end = time.time()
-    sys.stdout.write("GMM fit complete, time elapsed = {0:.2f} s\n".format((end-start)))
+    print("GMM fit complete, time elapsed = {0:.2f} s\n".format((end-start)))
 
     return GMM
 
@@ -102,7 +102,7 @@ def save_GMM_results(img_fname, GMM):
         for i in range(len(mu)):
             to_write = [mu[i], sigma[i], weights[i]]
             w.writerow(to_write) # writes mu, sigma and weight of each fitted Gaussian as a new row
-    sys.stdout.write("Results saved to {} \n".format(results_dir))
+    print("Results saved to {} \n".format(results_dir))
 
 def plot_GMM_fit(img, GMM, img_fname):
     """
@@ -147,7 +147,7 @@ def plot_GMM_fit(img, GMM, img_fname):
     plt.tight_layout()
     
     plt.savefig(os.path.join(results_dir, "histo.png"))
-    sys.stdout.write("Histogram plotted and saved to {} \n".format(results_dir))
+    print("Histogram plotted and saved to {} \n".format(results_dir))
     plt.show()
 
 # img_fname = os.path.join(os.getcwd(), "test", "test.tif")

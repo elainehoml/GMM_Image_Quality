@@ -22,7 +22,6 @@ def QM_get_params():
     f = open(os.path.join(os.path.dirname(__file__), "temp_user_dir.txt"), "r")
     user_params_fname = f.readlines()[0]
     f.close()
-    print(user_params_fname)
     
     # Open users_params.csv
     with open(user_params_fname, "r") as f:
@@ -41,6 +40,10 @@ def QM_get_params():
     user_params['n_gaussians'] = int(user_params['n_gaussians'])
     user_params['specify_gv'] = user_params['specify_gv'] == "True"
     
-    return user_params
+    # Print user params to console
+    print("Selected parameters: \n====================")
+    for param in user_params:
+        print(param, user_params[param])
+    print("\n")
 
-print(QM_get_params())
+    return user_params

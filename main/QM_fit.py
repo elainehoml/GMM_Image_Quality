@@ -45,7 +45,7 @@ def QM_fit(img, n_gaussians, img_fname, save_results = True, show_plots = True):
     
     end = time.time()
 
-    sys.stdout.write("GMM fit complete, time elapsed = {0:.2f} s\n".format((end-start)))
+    print("GMM fit complete, time elapsed = {0:.2f} s \n \n".format((end-start)))
 
     # Plot histogram ---------------------------------------------------------------------------------------------------------------
     
@@ -91,7 +91,7 @@ def QM_fit(img, n_gaussians, img_fname, save_results = True, show_plots = True):
     
     if save_results == True:
         plt.savefig(os.path.join(out_dir, "histo.png"))
-        sys.stdout.write("Histogram plotted and saved to {} \n".format(out_dir))
+        print("Histogram plotted and saved to {} \n \n".format(out_dir))
     
     if show_plots == True:
         plt.show()

@@ -30,6 +30,7 @@ def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
     SNR_CNR_df
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
+    print("GMM Fitting \n===========")
     img = QM_load(img_fname, pct_stack_import) # import image from img_fname
     GMM = GMM_fit.GMM_fit(img, n_gaussians)
     mu, sigma, weights = GMM_fit.extract_GMM_results(GMM)

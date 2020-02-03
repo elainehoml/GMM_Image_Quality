@@ -34,7 +34,7 @@ def QM_calc(mu, sigma, out_dir, save_results = True, verbose = True):
     gaussian_B = []
 
     # Calculate SNR and CNR ------------------------------------------------------------------------------------------------------------
-
+    print("SNR and CNR Results \n===================")
     for i in range(len(mu)):
         for j in range(len(mu)):
             if(i != j):
@@ -45,7 +45,9 @@ def QM_calc(mu, sigma, out_dir, save_results = True, verbose = True):
                 gaussian_A.append(i)
                 gaussian_B.append(j)
                 if verbose == True:
-                    sys.stdout.write("SNR = {0:.2f} and CNR = {1:.2f} with Gaussian A = {2} and Gaussian B = {3} \n".format(SNR, CNR, i, j))
+                    print("SNR = {0:.2f} and CNR = {1:.2f} with Gaussian A = {2} and Gaussian B = {3}".format(SNR, CNR, i, j))
+    if verbose == False:
+        print("Non-verbose mode")
 
     # Output as pd df to send to .csv --------------------------------------------------------------------------------------------------
 
