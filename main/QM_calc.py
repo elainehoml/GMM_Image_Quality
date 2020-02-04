@@ -24,7 +24,7 @@ def QM_calc(mu, sigma, results_dir, save_results = True, verbose = True):
     
     Returns
     -------
-    SNR_CNR_df : pandas DataFrame
+    SNR_CNR_df : pandas DataFrames
         Pandas DataFame of Gaussian A, Gaussian B, SNR and CNR
     """
 

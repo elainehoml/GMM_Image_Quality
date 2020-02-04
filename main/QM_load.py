@@ -3,20 +3,28 @@ from PIL import Image
 import numpy as np
 import sys
 
-def QM_load(img_fname, pct_stack_import = 10.):
-    """Loads n slices of a 3D image stack specified by percentage of stack to import
+import matplotlib.pyplot as plt
+
+def QM_load(img_fname, min_GV = 0, max_GV = 255, specify_gv = False, pct_stack_import = 10.):
+    """Loads n slices of a 3D image stack specified by % of stack to import, limits to min and max GV if specify_gv == True
 
     Parameters
     ----------
     img_fname : str
         Filepath of image to be loaded
+    min_GV : float
+        Minimum grey value to consider, ignored if specify_gv == False
+    max_GV : float
+        Maximum grey value to consider, ignored if specify_gv == False
+    specify_gv : bool
+        If True, discard grey values outside [min_GV, max_GV]
     pct_stack_import : float, default 10.
         Percentage of stack to import. Used to calculate number of slices to import, evenly spaced throughout stack
     
     Returns
     -------
     img
-        3D numpy array with only n slices imported based on pct_stack_import
+        Flattened 1D numpy array with only n slices imported based on pct_stack_import
     """
     start = time.time()
 
@@ -27,9 +35,18 @@ def QM_load(img_fname, pct_stack_import = 10.):
         I.seek(int((i+1)*(I.n_frames/(n_slices + 1)))) # evenly spaced slices through stack
         img = np.array(I)
         img_list.append(img)
+        img_nparray = np.asarray(img_list)
+    
+    if specify_gv == True:
+        img_flatten = img_nparray.flatten()
+        img_thresholded = img_flatten[(img_flatten > min_GV) & (img_flatten < max_GV)]
+        img_to_return = img_thresholded
+    
+    elif specify_gv == False:
+        img_to_return = img_nparray.flatten()
     
     end = time.time()
     
-    sys.stdout.write("Image imported, time elapsed = {0:.2f} s\n".format((end-start)))
+    print("Image imported, time elapsed = {0:.2f} s".format((end-start)))
     
-    return np.asarray(img_list)
+    return img_to_return

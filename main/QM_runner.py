@@ -7,7 +7,7 @@ from QM_load import QM_load
 from QM_calc import QM_calc
 import GMM_fit
 
-def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
+def QM_runner(img_fname, n_gaussians, min_GV = 0, max_GV = 255, specify_gv = False, pct_stack_import = 10.):
     """ Basic workflow returning SNR and CNR
     Parameters
     ----------
@@ -15,6 +15,12 @@ def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
         Filepath of image to load
     n_gaussians : int
         Number of Gaussians to fit
+    min_GV : float
+        Minimum grey value to consider, ignored if specify_gv == False
+    max_GV : float
+        Maximum grey value to consider, ignored if specify_gv == False
+    specify_gv : bool
+        If True, discard grey values outside [min_GV, max_GV]
     pct_stack_import : float
         Percentage of stack to import, defaults to 10.
     Returns
@@ -31,7 +37,7 @@ def QM_runner(img_fname, n_gaussians, pct_stack_import = 10.):
         Pandas DataFrame containing calculated SNR and CNR for all combinations of Gaussians
     """
     print("GMM Fitting \n===========")
-    img = QM_load(img_fname, pct_stack_import) # import image from img_fname
+    img = QM_load(img_fname, min_GV, max_GV, specify_gv, pct_stack_import) # import image from img_fname
     GMM = GMM_fit.GMM_fit(img, n_gaussians)
     mu, sigma, weights = GMM_fit.extract_GMM_results(GMM)
     out_dir = "{}_results".format(os.path.splitext(img_fname)[0])
