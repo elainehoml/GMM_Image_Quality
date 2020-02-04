@@ -25,7 +25,7 @@ def main_menu():
         Main menu with JButtons calling other functions
     """
     frame = JFrame("GMM Image Quality Calculator")
-    nButtons = 3
+    nButtons = 4
     frame.setSize(100 * nButtons, 300)
     frame.setLayout(GridLayout(nButtons, 1))
 
@@ -33,13 +33,13 @@ def main_menu():
     get_user_params_JB = JButton("Load image and settings", actionPerformed = User_Dialogs.get_user_params)
     fit_GMM_JB = JButton("Fit Gaussian Mixture Model", actionPerformed = User_Dialogs.fit_GMM)
     show_as_RT_JB = JButton("Show SNR and CNR as Results Table", actionPerformed = User_Dialogs.show_as_RT)
-    # TODO(Elaine): JButton for displaying results as a ResultsTable
-    # TODO(Elaine): JButton for displaying thresholded images
+    show_thresholded_JB = JButton("Show thresholded stack", actionPerformed = User_Dialogs.show_thresholded)
 
     # Add JButtons to frame
     frame.add(get_user_params_JB)
     frame.add(fit_GMM_JB)
     frame.add(show_as_RT_JB)
+    frame.add(show_thresholded_JB)
     frame.setVisible(True)
 
 # Main --------------------------------------------------------------------

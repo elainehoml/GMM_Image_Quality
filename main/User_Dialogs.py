@@ -3,12 +3,35 @@ from fiji.util.gui import GenericDialogPlus
 from javax.swing import JFrame, JButton, JList
 from java.awt import GridLayout, BorderLayout
 from ij.measure import ResultsTable
+from ij import IJ, ImagePlus
 
 # Import Run_CPython
 script_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(script_path)
 import Run_CPython
 
+# Misc utilities
+def get_results_dir():
+    """ Gets results directory of current GMM fit from temp_user_dir.txt
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    str
+        Results directory filepath
+    """
+    # Get results_dir from temp_user_dir where Users_Params.csv filepath is stored
+    temp_user_dir = os.path.join(script_path, "temp_user_dir.txt")
+    f = open(temp_user_dir, "r")
+    results_dir = f.read().strip("Users_Params.csv")
+    f.close()
+
+    return results_dir
+
+# User Dialog Functions
 def get_user_params(event):
     """ Allows user to select file and user parameters
 
@@ -103,16 +126,56 @@ def show_as_RT(event):
     ResultsTable
         Contains calculated SNR and CNR for each combination of Gaussians
     """
-    
-    # Get results_dir from temp_user_dir where Users_Params.csv filepath is stored
-    temp_user_dir = os.path.join(os.path.dirname(__file__), "temp_user_dir.txt")
-    f = open(temp_user_dir, "r")
-    results_dir = f.read().strip("Users_Params.csv")
-    f.close()
 
     # Open SNR_CNR_Results.csv as a ResultsTable
-    SNR_CNR_fname = os.path.join(results_dir, "SNR_CNR_Results.csv")
+    SNR_CNR_fname = os.path.join(get_results_dir(), "SNR_CNR_Results.csv")
     SNR_CNR_RT = ResultsTable.open2(SNR_CNR_fname)
     SNR_CNR_RT.show("SNR and CNR")
 
     return SNR_CNR_RT
+
+def show_thresholded(event):
+    """ Show virtual stack of image thresholded to mu +/- 1x sigma of each Gaussian component
+
+    Parameters
+    ----------
+    event : Event
+        Waits for show_thresholded_JB JButton to be pressed
+
+    Returns
+    -------
+    None
+    """
+
+    # Get image filename
+    results_dir = get_results_dir()
+    with open(os.path.join(results_dir, "Users_Params.csv")) as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            img_fname = row['img_fname']
+            n_gaussians = int(row['n_gaussians'])
+    print("Displaying image {} with {} Gaussians fitted".format(img_fname, n_gaussians))
+   
+    # Read mu and sigma from results directory
+    with open(os.path.join(results_dir, "fitted_results.csv")) as csv_file:
+        reader = csv.reader(csv_file)
+        results = [] # list containing lines in fitted_results.csv
+        for row in reader:
+            results.append(row)
+    mu_all = []
+    sigma_all = []
+    for i in range(3, len(results)):
+        mu_all.append(float(results[i][0]))
+        sigma_all.append(float(results[i][1]))
+
+    # Calculate values for thresholding (mu +/- 1x sigma)
+    lower_threshold = map(lambda mu, sigma: mu - sigma, mu_all, sigma_all)
+    upper_threshold = map(lambda mu, sigma: mu + sigma, mu_all, sigma_all)
+
+    # Display each slice thresholded with the Gaussian number in title
+    for gaussian in range(n_gaussians):
+        imp = IJ.openVirtual(img_fname)
+        imp.setTitle("Gaussian {}".format(gaussian))
+        imp.show()
+        IJ.setThreshold(imp, lower_threshold[gaussian], upper_threshold[gaussian])
+        print("Gaussian {} threshold values [{} - {}]".format(gaussian, lower_threshold[gaussian], upper_threshold[gaussian]))
