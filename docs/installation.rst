@@ -2,6 +2,12 @@
 Installation
 ************
 
+Requirements
+------------
+
+* Fiji/ImageJ
+* 
+
 Software dependencies
 ---------------------
 This software tool was built using
