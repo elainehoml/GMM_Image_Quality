@@ -20,6 +20,11 @@ import QM_calc
 sys.path.append(test_dir)
 import create_phantom
 
+# create phantom directory
+phantom_dir = "examples/benchmarking_phantoms"
+if os.path.isdir(phantom_dir) == False:
+    os.mkdir(phantom_dir)
+
 # Create phantom images with known SNR and CNR
 """ SNR and CNR are altered by scaling the sigma values for the phantom image, where original
 mu and sigma values were derived from the original image before reassigning GV """
@@ -50,7 +55,7 @@ def generate_mu_sigma_values():
     output_df = pd.DataFrame(output)
     output_df.columns = ["mu_air", "mu_wax", "mu_tissue", "sigma_air", "sigma_wax", "sigma_tissue"]
     output_df = phantom_name_df.join(output_df)
-    output_df.to_csv("examples/mu_sigma_GT.csv", index = None)
+    output_df.to_csv("{}/mu_sigma_GT.csv".format(phantom_dir), index = None)
 
     return output_df
 
@@ -67,12 +72,7 @@ def create_phantoms_varied(GT):
     -------
     list
         Contains filenames where phantoms are stored as .tifs
-    """
-    # create phantom directory
-    phantom_dir = "examples/benchmarking_phantoms"
-    if os.path.isdir(phantom_dir) == False:
-        os.mkdir(phantom_dir)
-    
+    """    
     # create and save phantoms
     for index, row in GT.iterrows():
         mu_phantom = [row["mu_air"], row["mu_wax"], row["mu_tissue"]]
@@ -81,5 +81,29 @@ def create_phantoms_varied(GT):
         I = create_phantom.create_phantom(mu_phantom, sigma_phantom, test_dir)
         create_phantom.save_phantom(I, phantom_fname)
 
+# Calculate ground truth SNR and CNR
+
+def GT_SNR_CNR(GT):
+    """ Calculates ground truth SNR and CNR and saves as .csv
+
+    Parameters
+    ----------
+    GT : Pandas DataFrame
+        Output from generate_mu_sigma_values which contains phantom_name, mu_air, mu_wax, mu_tissue, 
+        sigma_air, sigma_wax, sigma_tissue.
+
+    Returns
+    -------
+    None
+    """
+
+    for index, row in GT.iterrows():
+        mu = np.array([row["mu_air"], row["mu_wax"], row["mu_tissue"]])
+        sigma = np.array([row["sigma_air"], row["sigma_wax"], row["sigma_tissue"]])
+        output_fname = "{}/{}_GT.csv".format(phantom_dir, row["phantom_name"])
+        output_df = QM_calc.QM_calc(mu, sigma, results_dir = "NA", save_results = False, verbose = False) # will save results manually
+        output_df.to_csv(output_fname)
+
 mu_sigma_GT = generate_mu_sigma_values()
 create_phantoms_varied(mu_sigma_GT)
+GT_SNR_CNR(mu_sigma_GT)
