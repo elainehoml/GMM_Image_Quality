@@ -93,3 +93,21 @@ def show_phantom(I_phantom):
 
     plt.tight_layout()
     plt.show()
+
+def save_phantom(I_phantom, fname):
+    """ Saves phantom image as tiff with given fname
+
+    Parameters
+    ----------
+    I_phantom : np array
+        Numpy array of phantom image created by create_phantom
+    fname : str
+        Filename to save I_phantom in, including file extension. .tiff recommended.
+    
+    Returns
+    -------
+    None
+    """
+
+    io.imsave(fname, I_phantom)
+    
