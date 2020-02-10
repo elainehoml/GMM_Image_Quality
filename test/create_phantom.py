@@ -12,10 +12,10 @@ def replace_GV(mask_fname, mu_phantom, sigma_phantom):
     ----------
     mask_fname : str
         Either "Air.tif", "Wax.tif" or "Tissue.tif"
-    mu_phantom : int
-        Random integer for the mean of the normal distribution to be assigned
-    sigma_phantom : int
-        Random integer for the standard deviation of the normal distribution to be assigned
+    mu_phantom : float
+        Random float for the mean of the normal distribution to be assigned
+    sigma_phantom : float
+        Random float for the standard deviation of the normal distribution to be assigned
     Returns
     -------
     I_phantom
@@ -41,10 +41,10 @@ def create_phantom(mu_phantom, sigma_phantom, img_dir):
     The masks are then combined to create a phantom image which has a histogram made up of 3 peaks.
     Parameters
     ----------
-    mu_phantom : list of int
-        List of size 3 containing integer values of means between 0-255 (8-bit)
-    sigma_phantom : list of int
-        List of size 3 containing integer values of standard deviations ('sensible' values)
+    mu_phantom : list of float
+        List of size 3 containing float values of means between 0-255 (8-bit)
+    sigma_phantom : list of float
+        List of size 3 containing float values of standard deviations ('sensible' values)
     img_dir : str
         Directory where test images are stored
     Returns
