@@ -14,6 +14,7 @@ root_dir = os.path.split(os.path.abspath(os.path.dirname(sys.argv[0])))[0]
 test_dir = os.path.join(root_dir, "test")
 
 sys.path.append(os.path.join(root_dir, "main"))
+import QM_load
 import GMM_fit
 import QM_calc
 
@@ -104,6 +105,35 @@ def GT_SNR_CNR(GT):
         output_df = QM_calc.QM_calc(mu, sigma, results_dir = "NA", save_results = False, verbose = False) # will save results manually
         output_df.to_csv(output_fname)
 
+# Fit GMMs, calculate SNR and CNR
+
+def GMM_SNR_CNR(GT):
+    """ Fits GMMs and calculates SNR and CNR for phantoms, save SNR and CNR as csv
+
+    Parameters
+    ----------
+    GT : Pandas DataFrame
+        Output from generate_mu_sigma_values which contains phantom_name, mu_air, mu_wax, mu_tissue, 
+        sigma_air, sigma_wax, sigma_tissue. Used only to get filenames for phantom images.
+    
+    Returns
+    -------
+    None
+    """
+
+    for index, row in GT.iterrows():
+        phantom_fname = "{}/{}.tif".format(phantom_dir, row["phantom_name"])
+        I = QM_load.QM_load(phantom_fname)
+        GMM = GMM_fit.GMM_fit(I, 3)
+        mu_fitted, sigma_fitted, weights_fitted = GMM_fit.extract_GMM_results(GMM)
+        GMM_fit.save_GMM_results(phantom_fname, GMM)
+        GMM_fit.plot_GMM_fit(I, GMM, phantom_fname)
+        plt.close()
+        output_fname = "{}/{}_fitted.csv".format(phantom_dir, row["phantom_name"])
+        output_df = QM_calc.QM_calc(mu_fitted, sigma_fitted, results_dir = "NA", save_results = False, verbose = False)
+        output_df.to_csv(output_fname)
+
 mu_sigma_GT = generate_mu_sigma_values()
 create_phantoms_varied(mu_sigma_GT)
 GT_SNR_CNR(mu_sigma_GT)
+GMM_SNR_CNR(mu_sigma_GT)
