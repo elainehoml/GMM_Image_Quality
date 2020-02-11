@@ -3,11 +3,16 @@
 # Import libraries
 import os, sys
 import numpy as np
+from scipy import stats
 from skimage import io
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 sns.set()
+sns.set_style("white")
+font = {'size' : 12}
+plt.rc('figure', figsize=(8.27, 11.69)) # sets all plot to a4 portrait
+plt.rc('font', **font)
 
 # Import functions
 root_dir = os.path.split(os.path.abspath(os.path.dirname(sys.argv[0])))[0]
@@ -133,7 +138,120 @@ def GMM_SNR_CNR(GT):
         output_df = QM_calc.QM_calc(mu_fitted, sigma_fitted, results_dir = "NA", save_results = False, verbose = False)
         output_df.to_csv(output_fname)
 
+# Calculate SNR and CNR using conventional user-defined ROIs method
+
+def SNR_CNR_conv(GT):
+    """ Calculates SNR and CNR from average mu and sigma across 5 ROIs for each material, saves as .csv
+
+    Parameters
+    ----------
+    GT : Pandas DataFrame
+        Output from generate_mu_sigma_values which contains phantom_name, mu_air, mu_wax, mu_tissue, 
+        sigma_air, sigma_wax, sigma_tissue. Used only to get filenames for phantom images.
+    
+    Returns
+    -------
+    None
+    """
+
+    for index, row in GT.iterrows():
+        mu_conv = [] # 1-D list mu for air, wax, tissue for one phantom image
+        sigma_conv = []
+        materials = ["air", "wax", "tissue"]
+        for material in materials:
+            input_csv_fname = "{}/{}_results/{}_{}_mu_sigma.csv".format(phantom_dir, row["phantom_name"], row["phantom_name"], material)
+            mu_sigma_conv = np.loadtxt(input_csv_fname, delimiter = ",", skiprows = 1, usecols = (1,2))
+            mu_sigma_avg = np.mean(mu_sigma_conv, axis = 0)
+            mu_conv.append(mu_sigma_avg[0])
+            sigma_conv.append(mu_sigma_avg[1])
+        output_fname = "{}/{}_conv.csv".format(phantom_dir, row["phantom_name"])
+        output_df = QM_calc.QM_calc(mu_conv, sigma_conv, results_dir = "NA", save_results = False, verbose = False)
+        output_df.to_csv(output_fname)
+    
+def r2_val(x, y):
+    """ Calculate r**2 value """
+    slope, intercept, rval, pval, stderr = stats.linregress(x, y)
+    return rval**2
+
+def summary_plots():
+    """ Plots summary plots comparing conventional, GMM fitted and ground truth SNR and CNR """
+    # Import data
+    phantoms = ["P1", "P2", "P3", "P4", "P5", "P6"]
+    conv = {} # empty dict for conventional SNR and CNR summary
+    GMM = {} # empty dict for GMM SNR and CNR summary
+    GT = {} # empty dict for GT SNR and CNR summary
+    Gaussians_compared = np.loadtxt("{}/{}_conv.csv".format(phantom_dir, "P1"), delimiter = ",", skiprows = 1, usecols = (0,1))
+
+    def prep_df(dict_name, csv_name):
+        """ Reads .csv SNR and CNR files and creates summary .csv and df """
+        # insert Gaussians to be compared
+        dict_name["Gaussian_A"] = Gaussians_compared[:,0]
+        dict_name["Gaussian_B"] = Gaussians_compared[:,1]
+
+        # insert SNR and CNR values
+        for phantom in phantoms:
+            input_csv = np.loadtxt("{}/{}_{}.csv".format(phantom_dir, phantom, csv_name), delimiter = ",", skiprows = 1)
+            dict_name["{}_SNR".format(phantom)] = input_csv[:,2]
+            dict_name["{}_CNR".format(phantom)] = input_csv[:,3]
+        
+        df = pd.DataFrame.from_dict(dict_name)
+        df.to_csv("{}/{}_summary.csv".format(phantom_dir, csv_name), index = None)
+        
+        return pd.DataFrame.from_dict(dict_name)
+
+    conv_df = prep_df(conv, "conv")
+    GMM_df = prep_df(GMM, "fitted")
+    GT_df = prep_df(GT, "GT")
+    
+    def conv_gmm_gt_comp(cols, CNR_or_SNR):
+        """ fill this in """
+        titles = ["Air-Wax", "Air-Tissue", "Wax-Air", "Wax-Tissue", "Tissue-Air", "Tissue-Wax"]
+        fig = plt.figure()
+        sns.set_style("white")
+        for i in range(6):
+            xvals = GT_df.iloc[i,cols]
+            conv_yvals = conv_df.iloc[i,cols]
+            GMM_yvals = GMM_df.iloc[i,cols]
+            ax = plt.subplot(3,2,i+1)
+            # r2_conv = r2_val(xvals, conv_yvals) # calculate r^2 value for conv
+            # r2_GMM = r2_val(xvals, GMM_yvals) # calculate r^2 value for GMM
+            plt.plot(xvals, xvals, "k--", label = "Ground Truth", alpha = 0.8)
+            plt.plot(xvals, conv_yvals, "^", label = "Conventional", alpha = 0.8)
+            plt.plot(xvals, GMM_yvals, "o", label = "GMM", alpha = 0.8)
+            plt.yscale("log")
+            plt.xscale("log")
+            plt.title(titles[i])
+            plt.tight_layout()
+            plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
+            plt.ylabel("Measured {}".format(CNR_or_SNR))
+        handles, labels = ax.get_legend_handles_labels()
+        fig.legend(handles, labels, loc = "lower center", ncol = 3)
+        plt.tight_layout()
+        fig.subplots_adjust(top=0.961,bottom=0.117,left=0.077,right=0.971,hspace=0.426,wspace=0.273)
+        plt.savefig("examples/benchmarking_plots/{}_comparison.png".format(CNR_or_SNR))
+    # scatter plot of conv and gmm vs gt
+    # SNR
+    cols = [2,4,6,8,10,12]
+    conv_gmm_gt_comp(cols, "SNR")
+
+    # CNR
+    cols = [3,5,7,9,11,13]
+    conv_gmm_gt_comp(cols, "CNR")
+
+    # print("Ground Truth")
+    # print(GT_df)
+    # print("Conventional")
+    # print(conv_df)
+    # print("GMM")
+    # print(GMM_df)
+
+# Main ---------------------------------------------------------------------------------------------------
 mu_sigma_GT = generate_mu_sigma_values()
-create_phantoms_varied(mu_sigma_GT)
-GT_SNR_CNR(mu_sigma_GT)
-GMM_SNR_CNR(mu_sigma_GT)
+# create_phantoms_varied(mu_sigma_GT)
+# GT_SNR_CNR(mu_sigma_GT) # calculate ground truth snr and cnr
+# GMM_SNR_CNR(mu_sigma_GT) # calculate gmm snr and cnr
+
+# Once ROIs have been selected using Conventional_SNR_CNR.ijm in Fiji,
+# SNR_CNR_conv(mu_sigma_GT) # calculate conventional snr and cnr
+summary_plots()
+
