@@ -229,14 +229,68 @@ def summary_plots():
         plt.tight_layout()
         fig.subplots_adjust(top=0.961,bottom=0.117,left=0.077,right=0.971,hspace=0.426,wspace=0.273)
         plt.savefig("examples/benchmarking_plots/{}_comparison.png".format(CNR_or_SNR))
+    
+    def sns_lin_reg(cols, CNR_or_SNR):
+        """ Plots linear regression of GMM and conv vs GT, along with residuals
+
+        Parameters
+        ----------
+        cols : list
+            List of column numbers to take from df
+            [2,4,6,8,10,12] for SNR, [3,5,7,9,11,13] for CNR
+        CNR_or_SNR : str
+            Choose between "CNR" or "SNR" for axes labels
+        """
+        # Arrange data
+        xvals = []
+        GMM_yvals = []
+        conv_yvals = []
+        for i in range(6):
+            xvals.append(GT_df.iloc[i, cols].values)
+            GMM_yvals.append(GMM_df.iloc[i, cols].values)
+            conv_yvals.append(conv_df.iloc[i, cols].values)
+        xvals_flat = np.array(xvals).flatten()
+        GMM_flat = np.array(GMM_yvals).flatten()
+        conv_flat = np.array(conv_yvals).flatten()
+
+        # Linear regression plots
+        plt.figure()
+        sns.set_style("white")
+        plt.subplot(211)
+        sns.regplot(xvals_flat, GMM_flat)
+        plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
+        plt.ylabel("GMM {}".format(CNR_or_SNR))
+        plt.subplot(212)
+        sns.regplot(xvals_flat, conv_flat)
+        plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
+        plt.ylabel("Conventional {}".format(CNR_or_SNR))
+        plt.savefig("examples/benchmarking_plots/{}_linreg.png".format(CNR_or_SNR))
+
+        # Residual plots
+        plt.figure()
+        sns.set_style("white")
+        plt.subplot(211)
+        plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
+        plt.ylabel("GMM Residuals")
+        sns.residplot(xvals_flat, GMM_flat)
+        plt.subplot(212)
+        sns.residplot(xvals_flat, conv_flat)
+        plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
+        plt.ylabel("Conventional Residuals")
+        plt.savefig("examples/benchmarking_plots/{}_residuals.png".format(CNR_or_SNR))
+
+
     # scatter plot of conv and gmm vs gt
     # SNR
     cols = [2,4,6,8,10,12]
-    conv_gmm_gt_comp(cols, "SNR")
+    # conv_gmm_gt_comp(cols, "SNR")
+    sns_lin_reg(cols, "SNR")
+    #TODO[Elaine]: Show r^2 values maybe?
 
     # CNR
     cols = [3,5,7,9,11,13]
-    conv_gmm_gt_comp(cols, "CNR")
+    # conv_gmm_gt_comp(cols, "CNR")
+    sns_lin_reg(cols, "CNR")
 
     # print("Ground Truth")
     # print(GT_df)
