@@ -12,7 +12,7 @@ from scipy.stats import norm
 
 import QM_load
 
-def GMM_fit(img, n_gaussians):
+def GMM_fit(img, n_gaussians, mu_init = None, sigma_init = None):
     """
     Fits Gaussian mixture model to grey value histogram of img
 
@@ -22,6 +22,10 @@ def GMM_fit(img, n_gaussians):
         3D numpy array of image, output from QM_load.py
     n_gaussians : int
         Number of Gaussian components to fit to histogram, usually equals number of material components in specimen
+    mu_init : array-like, shape (n_gaussians, ), optional
+        User-provided initial means, defaults to None. 
+    sigma_init : array-like, shape (n_gaussians, ), optional
+        User-provided initial standard deviations, defaults to None. Can only be specified with mu_init.
     
     Returns
     -------
@@ -33,7 +37,16 @@ def GMM_fit(img, n_gaussians):
 
     img_1d = img.flatten() # flatten 3D img array
 
-    GMM = sklearn.mixture.GaussianMixture(n_components = n_gaussians, random_state = 3) # fix random state for predictability
+    if mu_init != None:
+        mu_init = np.array(mu_init).reshape([n_gaussians, 1])
+        GMM = sklearn.mixture.GaussianMixture(n_components = n_gaussians, random_state = 3, means_init = mu_init) # fix random state for predictability
+    if sigma_init != None: # not tested
+        mu_init = np.array(mu_init).reshape([n_gaussians, 1])
+        precisions_init = np.array(np.linalg.inv(sigma_init ** 2)).reshape([n_gaussians, 1]) # precisions = inv(sigma^2)
+        GMM = sklearn.mixture.GaussianMixture(n_components = n_gaussians, random_state = 3, means_init = mu_init, precisions_init = precisions_init) # fix random state for predictability
+    else:
+        GMM = sklearn.mixture.GaussianMixture(n_components = n_gaussians, random_state = 3) # fix random state for predictability
+    
     GMMfit = GMM.fit(img_1d.reshape(-1,1))
 
     end = time.time()

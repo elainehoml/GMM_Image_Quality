@@ -11,7 +11,6 @@ import pandas as pd
 sns.set()
 sns.set_style("white")
 font = {'size' : 12}
-plt.rc('figure', figsize=(8.27, 11.69)) # sets all plot to a4 portrait
 plt.rc('font', **font)
 
 # Import functions
@@ -129,7 +128,7 @@ def GMM_SNR_CNR(GT):
     for index, row in GT.iterrows():
         phantom_fname = "{}/{}.tif".format(phantom_dir, row["phantom_name"])
         I = QM_load.QM_load(phantom_fname)
-        GMM = GMM_fit.GMM_fit(I, 3)
+        GMM = GMM_fit.GMM_fit(I, 3, [8, 35, 82])
         mu_fitted, sigma_fitted, weights_fitted = GMM_fit.extract_GMM_results(GMM)
         GMM_fit.save_GMM_results(phantom_fname, GMM)
         GMM_fit.plot_GMM_fit(I, GMM, phantom_fname)
@@ -175,6 +174,10 @@ def r2_val(x, y):
 
 def summary_plots():
     """ Plots summary plots comparing conventional, GMM fitted and ground truth SNR and CNR """
+    # Create plots directory
+    if os.path.isdir("examples/benchmarking_plots") == False:
+        os.mkdir("examples/benchmarking_plots")
+    
     # Import data
     phantoms = ["P1", "P2", "P3", "P4", "P5", "P6"]
     conv = {} # empty dict for conventional SNR and CNR summary
@@ -206,7 +209,7 @@ def summary_plots():
     def conv_gmm_gt_comp(cols, CNR_or_SNR):
         """ fill this in """
         titles = ["Air-Wax", "Air-Tissue", "Wax-Air", "Wax-Tissue", "Tissue-Air", "Tissue-Wax"]
-        fig = plt.figure()
+        fig = plt.figure(figsize=(8.27, 11.69))
         sns.set_style("white")
         for i in range(6):
             xvals = GT_df.iloc[i,cols]
@@ -254,7 +257,7 @@ def summary_plots():
         conv_flat = np.array(conv_yvals).flatten()
 
         # Linear regression plots
-        plt.figure()
+        plt.figure(figsize=(8.27, 11.69))
         sns.set_style("white")
         plt.subplot(211)
         sns.regplot(xvals_flat, GMM_flat)
@@ -267,7 +270,7 @@ def summary_plots():
         plt.savefig("examples/benchmarking_plots/{}_linreg.png".format(CNR_or_SNR))
 
         # Residual plots
-        plt.figure()
+        plt.figure(figsize=(8.27, 11.69))
         sns.set_style("white")
         plt.subplot(211)
         plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
@@ -283,13 +286,12 @@ def summary_plots():
     # scatter plot of conv and gmm vs gt
     # SNR
     cols = [2,4,6,8,10,12]
-    # conv_gmm_gt_comp(cols, "SNR")
+    conv_gmm_gt_comp(cols, "SNR")
     sns_lin_reg(cols, "SNR")
-    #TODO[Elaine]: Show r^2 values maybe?
 
     # CNR
     cols = [3,5,7,9,11,13]
-    # conv_gmm_gt_comp(cols, "CNR")
+    conv_gmm_gt_comp(cols, "CNR")
     sns_lin_reg(cols, "CNR")
 
     # print("Ground Truth")
@@ -303,7 +305,7 @@ def summary_plots():
 mu_sigma_GT = generate_mu_sigma_values()
 # create_phantoms_varied(mu_sigma_GT)
 # GT_SNR_CNR(mu_sigma_GT) # calculate ground truth snr and cnr
-# GMM_SNR_CNR(mu_sigma_GT) # calculate gmm snr and cnr
+GMM_SNR_CNR(mu_sigma_GT) # calculate gmm snr and cnr
 
 # Once ROIs have been selected using Conventional_SNR_CNR.ijm in Fiji,
 # SNR_CNR_conv(mu_sigma_GT) # calculate conventional snr and cnr
