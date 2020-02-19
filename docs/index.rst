@@ -42,7 +42,10 @@ Availability
 ------------
 This software tool is available from https://github.com/elainehoml/GMM_Image_Quality under the 
 Apache License 2.0.
+
 For issues/suggestions, feel free to contact me at eml.ho@soton.ac.uk. 
+
+This work was completed with support from the Engineering and Physical Sciences Research Council (EPSRC), Institute for Life Sciences, University of Southampton during a doctoral research studentship from the Faculty of Engineering and the Environment, University of Southampton.
 
 Get Started
 ------------
