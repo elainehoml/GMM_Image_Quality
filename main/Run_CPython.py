@@ -24,8 +24,8 @@ def run_CPython(path, script):
 		Output from stderr
 	"""
 
-	# Command to run
-	cmd_str = "cmd /k cd {} & python {} & exit()".format(path, script)
+	# Command to run, Windows only
+	cmd_str = "cmd /k cd /d {} & python {} & exit()".format(path, script)
 
 	# Start a new process, run python script from cmd
 	run = Runtime.getRuntime()
