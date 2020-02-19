@@ -51,3 +51,4 @@ Get Started
    
    installation.rst
    userguide.rst
+   examples.rst

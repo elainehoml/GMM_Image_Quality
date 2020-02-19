@@ -37,7 +37,7 @@ Anaconda Distribution is a free Python distribution with its own package and env
  
 `More information on downloading and installing Anaconda`_.
 
-Please ensure that you **add Python to PATH** so that Python scripts can be run from the command line.
+Please ensure that you **add Python to PATH** so that Python scripts can be run from the command line. This tool runs on Python 3.7.
 
  .. _More information on downloading and installing Anaconda: https://docs.anaconda.com/anaconda/install/windows/
 
@@ -63,7 +63,7 @@ To activate a virtual environment,
 
 ::
 
-    py -m venv env 
+    python -m venv env 
 
 * Activate the virtual environment
 
