@@ -140,7 +140,7 @@ def plot_GMM_fit(img, GMM, img_fname):
     fig  = plt.figure()
     ax = plt.subplot(111)
     bins = int(0.25 * np.sqrt(len(img_1d)))
-    histo = plt.hist(img_1d, bins = bins, density = True, linewidth = 0)
+    histo = plt.hist(img_1d, bins = bins, density = True, linewidth = 0, label = "Pixel Intensities")
 
     # Plot fitted Gaussians
     mu, sigma, weights = extract_GMM_results(GMM)
@@ -154,12 +154,12 @@ def plot_GMM_fit(img, GMM, img_fname):
         plt.plot(x_mu, y_mu, color = gauss[0]._color)
         plt.text(mu[i], y_mu[1], "{}".format(i), horizontalalignment = "center")
     plt.plot(histo[1], np.sum(norm_mat, axis = 1), "k--", label = "Sum of fitted Gaussians") # Plot sum of fitted Gaussians
-    plt.xlabel("Grey Values")
+    plt.xlabel("Pixel Intensity")
     plt.ylabel("Probability Density")
     ax.legend(bbox_to_anchor = (0.8, -0.2))
     plt.tight_layout()
     
-    plt.savefig(os.path.join(results_dir, "histo.png"))
+    plt.savefig(os.path.join(results_dir, "histo.png"), dpi = 100)
     print("Histogram plotted and saved to {} \n".format(results_dir))
     plt.show()
 
