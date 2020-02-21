@@ -3,14 +3,14 @@
 # Import libraries
 import os, sys
 import numpy as np
-from scipy import stats
+from scipy.stats import linregress
 from skimage import io
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 sns.set()
 sns.set_style("white")
-font = {'size' : 12}
+font = {'size' : 32}
 plt.rc('font', **font)
 
 # Import functions
@@ -49,14 +49,15 @@ def generate_mu_sigma_values():
 
     mu_original = np.array([8, 35, 82]) # air, wax and tissue
     sigma_original = np.array([7, 6, 16]) # air, wax and tissue
-    sigma_scaling_factor = [0.1, 0.2, 0.5, 1.0, 2.0, 4.0]
-    mu_phantom = np.zeros([6,3])
-    sigma_phantom = np.zeros([6,3])
+    # sigma_scaling_factor = [0.1, 0.2, 0.5, 1.0, 2.0, 4.0]
+    sigma_scaling_factor = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0]
+    mu_phantom = np.zeros([len(sigma_scaling_factor),3])
+    sigma_phantom = np.zeros([len(sigma_scaling_factor),3])
     for i in range(len(sigma_scaling_factor)):
         mu_phantom[i,:] = mu_original
         sigma_phantom[i,:] = sigma_original*sigma_scaling_factor[i]
     output = np.concatenate((mu_phantom, sigma_phantom), axis = 1) # join for output to csv
-    phantom_name_df = pd.DataFrame({"phantom_name": ["P1", "P2", "P3", "P4", "P5", "P6"]})
+    phantom_name_df = pd.DataFrame({"phantom_name": ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"]})
     output_df = pd.DataFrame(output)
     output_df.columns = ["mu_air", "mu_wax", "mu_tissue", "sigma_air", "sigma_wax", "sigma_tissue"]
     output_df = phantom_name_df.join(output_df)
@@ -128,9 +129,13 @@ def GMM_SNR_CNR(GT):
     for index, row in GT.iterrows():
         phantom_fname = "{}/{}.tif".format(phantom_dir, row["phantom_name"])
         I = QM_load.QM_load(phantom_fname)
-        GMM = GMM_fit.GMM_fit(I, 3, [8, 35, 82])
+        GMM = GMM_fit.GMM_fit(I, 3)
         mu_fitted, sigma_fitted, weights_fitted = GMM_fit.extract_GMM_results(GMM)
         GMM_fit.save_GMM_results(phantom_fname, GMM)
+        sns.set_style("white")
+        sns.set_context("poster")
+        plt.rcParams["font.size"] = 36
+        plt.rcParams["figure.figsize"] = (14,10)
         GMM_fit.plot_GMM_fit(I, GMM, phantom_fname)
         plt.close()
         output_fname = "{}/{}_fitted.csv".format(phantom_dir, row["phantom_name"])
@@ -179,7 +184,7 @@ def summary_plots():
         os.mkdir("examples/benchmarking_plots")
     
     # Import data
-    phantoms = ["P1", "P2", "P3", "P4", "P5", "P6"]
+    phantoms = ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8"]
     conv = {} # empty dict for conventional SNR and CNR summary
     GMM = {} # empty dict for GMM SNR and CNR summary
     GT = {} # empty dict for GT SNR and CNR summary
@@ -221,8 +226,8 @@ def summary_plots():
             plt.plot(xvals, xvals, "k--", label = "Ground Truth", alpha = 0.8)
             plt.plot(xvals, conv_yvals, "^", label = "Conventional", alpha = 0.8)
             plt.plot(xvals, GMM_yvals, "o", label = "GMM", alpha = 0.8)
-            plt.yscale("log")
-            plt.xscale("log")
+            # plt.yscale("log")
+            # plt.xscale("log")
             plt.title(titles[i])
             plt.tight_layout()
             plt.xlabel("Ground Truth {}".format(CNR_or_SNR))
@@ -282,30 +287,77 @@ def summary_plots():
         plt.ylabel("Conventional Residuals")
         plt.savefig("examples/benchmarking_plots/{}_residuals.png".format(CNR_or_SNR))
 
+    def poster_linreg_plots():
+        # Arrange data
+        cols_SNR = [2,4,6,8,10,12]
+        cols_CNR = [3,5,7,9,11,13]
+        xvals = []
+        GMM_yvals = []
+        conv_yvals = []
+        plt.figure(figsize = (14,7))
+        sns.set_style("white")
+        sns.set_context("poster")
+        # SNR
+        for i in range(6):
+            xvals.append(GT_df.iloc[i, cols_SNR].values)
+            GMM_yvals.append(GMM_df.iloc[i, cols_SNR].values)
+            conv_yvals.append(conv_df.iloc[i, cols_SNR].values)
+        xvals_flat = np.array(xvals).flatten()
+        GMM_flat = np.array(GMM_yvals).flatten()
+        conv_flat = np.array(conv_yvals).flatten()
+        GMM_linreg_r2 = linregress(xvals_flat, GMM_flat)[2]
+        conv_linreg_r2 = linregress(xvals_flat, conv_flat)[2]
+        plt.subplot(121)
+        # plt.xlim([0,150])
+        # plt.ylim([0,150])
+        sns.regplot(xvals_flat, conv_flat, label = r"Conventional, $R^2$ = {0:.5f}".format(conv_linreg_r2), color = 'r', marker = ".", scatter_kws= {'facecolors':'none'}, line_kws = {'linewidth':1})
+        sns.regplot(xvals_flat, GMM_flat, label = r"GMM, $R^2$ = {0:.5f}".format(GMM_linreg_r2), marker = ".", scatter_kws= {'facecolors':'none'}, line_kws = {'linewidth':1})
+        plt.legend(fontsize = 18)
+        plt.xlabel("Ground Truth SNR")
+        plt.ylabel("Calculated SNR")
+        # CNR
+        xvals = []
+        GMM_yvals = []
+        conv_yvals = []
+        for i in range(6):
+            xvals.append(GT_df.iloc[i, cols_CNR].values)
+            GMM_yvals.append(GMM_df.iloc[i, cols_CNR].values)
+            conv_yvals.append(conv_df.iloc[i, cols_CNR].values)
+        xvals_flat = np.array(xvals).flatten()
+        GMM_flat = np.array(GMM_yvals).flatten()
+        conv_flat = np.array(conv_yvals).flatten()
+        plt.subplot(122)
+        GMM_linreg_r2 = linregress(xvals_flat, GMM_flat)[2]
+        conv_linreg_r2 = linregress(xvals_flat, conv_flat)[2]
+        # plt.xlim([0,40])
+        # plt.ylim([0,40])
+        sns.regplot(xvals_flat, conv_flat, label = r"Conventional, $R^2$ = {0:.5f}".format(conv_linreg_r2), color = 'r', marker = ".", scatter_kws= {'facecolors':'none'}, line_kws = {'linewidth':1})
+        sns.regplot(xvals_flat, GMM_flat, label = r"GMM, $R^2$ = {0:.5f}".format(GMM_linreg_r2), marker = ".", scatter_kws= {'facecolors':'none'}, line_kws = {'linewidth':1})
+        plt.xlabel("Ground Truth CNR")
+        plt.ylabel("Calculated CNR")
+        plt.legend(fontsize = 18)
+        plt.tight_layout()
+        plt.savefig("examples/benchmarking_plots/neubias_poster.png", dpi=100)
 
-    # scatter plot of conv and gmm vs gt
-    # SNR
+
+    # # scatter plot of conv and gmm vs gt
+    # # SNR
     cols = [2,4,6,8,10,12]
     conv_gmm_gt_comp(cols, "SNR")
     sns_lin_reg(cols, "SNR")
 
-    # CNR
+    # # CNR
     cols = [3,5,7,9,11,13]
     conv_gmm_gt_comp(cols, "CNR")
     sns_lin_reg(cols, "CNR")
 
-    # print("Ground Truth")
-    # print(GT_df)
-    # print("Conventional")
-    # print(conv_df)
-    # print("GMM")
-    # print(GMM_df)
+    poster_linreg_plots()
 
 # Main ---------------------------------------------------------------------------------------------------
 mu_sigma_GT = generate_mu_sigma_values()
 # create_phantoms_varied(mu_sigma_GT)
 # GT_SNR_CNR(mu_sigma_GT) # calculate ground truth snr and cnr
-GMM_SNR_CNR(mu_sigma_GT) # calculate gmm snr and cnr
+# GMM_SNR_CNR(mu_sigma_GT) # calculate gmm snr and cnr
 
 # Once ROIs have been selected using Conventional_SNR_CNR.ijm in Fiji,
 # SNR_CNR_conv(mu_sigma_GT) # calculate conventional snr and cnr
