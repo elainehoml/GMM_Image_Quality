@@ -15,6 +15,7 @@ Features
 * Repeatable, objective measurement of SNR and CNR
 * Graphical user interface provided as a Jython plugin for Fiji/ImageJ
 * Automatic saving of results in .csv files for further analysis
+* Importable Python libraries for scripting
 
 Background
 ----------
@@ -41,11 +42,20 @@ image with overlapping distributions.
 Availability
 ------------
 This software tool is available from https://github.com/elainehoml/GMM_Image_Quality under the 
-Apache License 2.0.
+GNU General Public License v3.0.
 
 For issues/suggestions, feel free to contact me at eml.ho@soton.ac.uk. 
 
 This work was completed with support from the Engineering and Physical Sciences Research Council (EPSRC), Institute for Life Sciences, University of Southampton during a doctoral research studentship from the Faculty of Engineering and the Environment, University of Southampton.
+
+Authors
+-------
+E.M.L. Ho [1], C. Rossides [1,2], O. Katsamenis [3], P. Lackie [2,4], P. Schneider [1,3]
+
+1. Bioengineering Science Research Group, Faculty of Engineering and Physical Sciences, University of Southampton, UK.
+2. School of Clinical and Experimental Sciences, Faculty of Medicine, University of Southampton, UK.
+3. :math:`\mu`-VIS X-ray Imaging Centre, Faculty of Engineering and Physical Sciences, University of Southampton, UK.
+4. Biomedical Imaging Unit, Clinical & Experimental Sciences, Faculty of Medicine, University of Southampton, UK.
 
 Get Started
 ------------
