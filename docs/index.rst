@@ -7,6 +7,9 @@
 GMM Image Quality
 ******************
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3688733.svg
+   :target: https://doi.org/10.5281/zenodo.3688733
+
 The GMM Image Quality tool provides a semi-automated tool for calculating signal-to-noise ratio (SNR)
 and contrast-to-noise ratio (CNR) from X-ray microcomputed tomography (microCT) datasets.
 
@@ -56,6 +59,12 @@ E.M.L. Ho [1], C. Rossides [1,2], O. Katsamenis [3], P. Lackie [2,4], P. Schneid
 2. School of Clinical and Experimental Sciences, Faculty of Medicine, University of Southampton, UK.
 3. :math:`\mu`-VIS X-ray Imaging Centre, Faculty of Engineering and Physical Sciences, University of Southampton, UK.
 4. Biomedical Imaging Unit, Clinical & Experimental Sciences, Faculty of Medicine, University of Southampton, UK.
+
+Citation
+--------
+
+If you found this helpful, please cite us:
+Elaine Ming Li Ho, Charalambos Rossides, Orestis Katsamenis, Peter M. Lackie, & Philipp Schneider. (2020, February 26). Objective and repeatable image quality assessment with Gaussian mixture models (Version v1.0.0). Zenodo. http://doi.org/10.5281/zenodo.3688733
 
 Get Started
 ------------
