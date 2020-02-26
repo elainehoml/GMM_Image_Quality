@@ -26,7 +26,7 @@ If you are comfortable with Git, navigate to a directory of your choice and clon
 
 Alternatively, the repository can be downloaded as a .zip file from https://github.com/elainehoml/GMM_Image_Quality.
 
-.. image:: images/download_zip_git.png
+.. image:: download_zip_git.png
 
 You will have to unzip the download to a directory of your choice.
 
@@ -43,7 +43,7 @@ Please ensure that you **add Python to PATH** so that Python scripts can be run 
 
 To test if this requirement is satisfied, open a command prompt window and type 'python'
 
-.. image:: images/cmd_python_path.png
+.. image:: cmd_python_path.png
 
 Python virtual environment
 --------------------------
