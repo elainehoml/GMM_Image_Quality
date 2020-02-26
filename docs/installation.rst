@@ -43,7 +43,7 @@ Please ensure that you **add Python to PATH** so that Python scripts can be run 
 
 To test if this requirement is satisfied, open a command prompt window and type 'python'
 
-.. image:: images/cmd_python_path.png
+.. image:: /images/cmd_python_path.png
 
 Python virtual environment
 --------------------------
