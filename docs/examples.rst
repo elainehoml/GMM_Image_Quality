@@ -21,4 +21,4 @@ The script to generate phantom images and assess its performance is included as 
 
 SNR and CNR calculated by GMM and conventional methods were found to be comparable to ground truth values (R\ :sup:`2` value > 0.99). However, GMM calculations were 60x faster (1 second/phantom image) than conventional calculations (1 min/phantom image). 
 
-.. image:: images/neubias_poster.png
+.. image:: neubias_poster.png
