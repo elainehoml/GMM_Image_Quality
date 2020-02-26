@@ -1,2 +1,4 @@
-# GMM_Image_Quality
- SNR and CNR calculation based on Gaussian Mixture Model fitting to grey value histograms for 3D images
+# GMM Image Quality
+Objective and repeatable image quality assessment with Gaussian mixture models
+
+Read the docs: https://gmm-image-quality.readthedocs.io/en/latest/index.html
