@@ -4,9 +4,10 @@
 import os
 import numpy as np
 from scipy.stats import norm
-from bokeh.layouts import gridplot
+from bokeh.layouts import row
 from bokeh.plotting import figure, output_file, show
-from bokeh.palettes import Set2 as palette
+from bokeh.palettes import Set2, Greys
+from PIL import Image
 import QM_load
 
 # Functions
@@ -42,7 +43,7 @@ def bokeh_plot(img_fname):
     results_dir = "{}_results".format(os.path.splitext(img_fname)[0])
     GMM_results = np.loadtxt(os.path.join(results_dir, "fitted_results.csv"), delimiter=",")
     norm_mat = np.zeros([len(bin_midpoint), len(GMM_results)])
-    colours = (palette[8])
+    colours = (Set2[8])
     for i in range(len(GMM_results)): # for each Gaussian
         mu = GMM_results[i,0]
         sigma = GMM_results[i,1]
@@ -56,9 +57,19 @@ def bokeh_plot(img_fname):
     # Legend
     p.legend.click_policy = "hide"
 
+    # Get image and open to central slice
+    I = Image.open(img_fname)
+    I.seek(int(I.n_frames/2))
+    img_np = np.array(I)
+    img_p_tooltips = [("x","$x"), ("y","$y"), ("grey value","@image")]
+    img_p = figure(title=os.path.basename(img_fname), tooltips=img_p_tooltips)
+    img_p.image(image=[img_np], x=0, y=0, dw=10, dh=10, palette=Greys[9], level="image")
+    img_p.xgrid.visible = False
+    img_p.ygrid.visible = False
+
     # Show
     output_file(os.path.join(results_dir, "{}_GMM_vis.html".format(basename)), title="{} GMM fit".format(basename))
-    show(p)
+    show(row(p, img_p))
     
     return p
 
