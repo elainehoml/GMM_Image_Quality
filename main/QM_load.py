@@ -31,11 +31,16 @@ def QM_load(img_fname, min_GV = 0, max_GV = 255, specify_gv = False, pct_stack_i
     I = Image.open(img_fname)
     n_slices = int(I.n_frames * (pct_stack_import/100)) # calculate number of slices to import
     img_list = []
-    for i in np.arange(0, n_slices):
-        I.seek(int((i+1)*(I.n_frames/(n_slices + 1)))) # evenly spaced slices through stack
-        img = np.array(I)
-        img_list.append(img)
-        img_nparray = np.asarray(img_list)
+
+    if I.n_frames > 1:
+        for i in np.arange(0, n_slices):
+            I.seek(int((i+1)*(I.n_frames/(n_slices + 1)))) # evenly spaced slices through stack
+            img = np.array(I)
+            img_list.append(img)
+            img_nparray = np.asarray(img_list)
+    if I.n_frames == 1: # handles 1D case
+        I.seek(0)
+        img_nparray = np.asarray(I)
     
     if specify_gv == True:
         img_flatten = img_nparray.flatten()
